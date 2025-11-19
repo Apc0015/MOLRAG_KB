@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MolRAG Architecture Workflow</title>
+    <style>
+        :root {
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-brown-600-rgb: 94, 82, 64;
+            --color-teal-500-rgb: 33, 128, 141;
+            
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+            --color-primary-hover: var(--color-teal-600);
+            --color-border: rgba(var(--color-brown-600-rgb), 0.2);
+            --color-card-border: rgba(var(--color-brown-600-rgb), 0.12);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: var(--color-gray-200);
+                --color-text-secondary: rgba(167, 169, 169, 0.7);
+                --color-primary: var(--color-teal-300);
+                --color-border: rgba(119, 124, 124, 0.3);
+                --color-card-border: rgba(119, 124, 124, 0.2);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--color-background);
+            color: var(--color-text);
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 12px;
+            color: var(--color-text);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .workflow-container {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid var(--color-card-border);
+            margin-bottom: 30px;
+        }
+
+        .stage {
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .stage:last-child {
+            margin-bottom: 0;
+        }
+
+        .stage-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stage-number {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 20px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .stage-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--color-text);
+        }
+
+        .stage-content {
+            margin-left: 64px;
+        }
+
+        .description {
+            color: var(--color-text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.7;
+        }
+
+        .components {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            margin-top: 16px;
+        }
+
+        .component-card {
+            background: var(--color-background);
+            border: 1px solid var(--color-border);
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.2s ease;
+        }
+
+        .component-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .component-title {
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .component-desc {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            line-height: 1.6;
+        }
+
+        .arrow {
+            width: 3px;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--color-primary), transparent);
+            margin-left: 22px;
+            margin-bottom: 10px;
+            margin-top: 10px;
+        }
+
+        .key-features {
+            background: var(--color-surface);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid var(--color-card-border);
+        }
+
+        .key-features h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: var(--color-text);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: start;
+            gap: 12px;
+        }
+
+        .feature-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: var(--color-primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .feature-text {
+            flex: 1;
+        }
+
+        .feature-title {
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 4px;
+            font-size: 15px;
+        }
+
+        .feature-desc {
+            font-size: 14px;
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+        }
+
+        .highlight-box {
+            background: rgba(var(--color-teal-500-rgb), 0.08);
+            border-left: 4px solid var(--color-primary);
+            padding: 16px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+
+        .highlight-box strong {
+            color: var(--color-primary);
+        }
+
+        @media (max-width: 768px) {
+            .workflow-container {
+                padding: 24px;
+            }
+
+            .stage-content {
+                margin-left: 0;
+                margin-top: 16px;
+            }
+
+            .components {
+                grid-template-columns: 1fr;
+            }
+
+            .arrow {
+                margin-left: 0;
+                width: 40px;
+                height: 3px;
+                background: linear-gradient(to right, var(--color-primary), transparent);
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+
+            .stage-title {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MolRAG Architecture Workflow</h1>
+        <p class="subtitle">Training-Free Molecular Property Prediction with Large Language Models</p>
+
+        <div class="workflow-container">
+            <!-- Input -->
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">📥</div>
+                    <div class="stage-title">Input</div>
+                </div>
+                <div class="stage-content">
+                    <p class="description">
+                        The process begins with a query molecule whose property needs to be predicted (e.g., "Is this molecule toxic?")
+                    </p>
+                    <div class="highlight-box">
+                        <strong>Example:</strong> SMILES string like "CC(C)Cc1ccc(cc1)C(C)C(O)=O" representing molecular structure
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Stage 1: Retrieval -->
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">1</div>
+                    <div class="stage-title">Molecular Retrieval</div>
+                </div>
+                <div class="stage-content">
+                    <p class="description">
+                        Convert the query molecule into a fingerprint and search for structurally similar molecules with known properties
+                    </p>
+                    <div class="components">
+                        <div class="component-card">
+                            <div class="component-title">Fingerprint Encoding</div>
+                            <div class="component-desc">Morgan Fingerprint converts molecular structure into fixed-length vectors capturing topology and connectivity patterns</div>
+                        </div>
+                        <div class="component-card">
+                            <div class="component-title">Similarity Search</div>
+                            <div class="component-desc">Uses Dice coefficient to measure feature overlap and retrieve top-k most similar molecules from reference database</div>
+                        </div>
+                        <div class="component-card">
+                            <div class="component-title">Retrieved Examples</div>
+                            <div class="component-desc">Returns similar molecules with their known properties and similarity scores (e.g., 0.85 similarity, Property: Toxic)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Stage 2: CoT Reasoning -->
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">2</div>
+                    <div class="stage-title">Chain-of-Thought Reasoning</div>
+                </div>
+                <div class="stage-content">
+                    <p class="description">
+                        Apply domain-specific reasoning strategies to guide the LLM's analysis of molecular properties
+                    </p>
+                    <div class="components">
+                        <div class="component-card">
+                            <div class="component-title">Structure-Aware CoT</div>
+                            <div class="component-desc">Systematic structural decomposition: extract functional groups, count aromatic rings, analyze chirality and chain length, then map to properties</div>
+                        </div>
+                        <div class="component-card">
+                            <div class="component-title">Similarity-Aware CoT</div>
+                            <div class="component-desc">Leverage property continuity principle: structurally similar molecules have similar properties. Perform cross-molecule correlation analysis</div>
+                        </div>
+                    </div>
+                    <div class="highlight-box">
+                        <strong>Performance:</strong> Sim-CoT outperforms Struct-CoT on 6 of 7 datasets, suggesting similarity-based reasoning better captures chemical property landscapes
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Stage 3: Prompt Construction & LLM Inference -->
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">3</div>
+                    <div class="stage-title">Prompt Engineering & LLM Inference</div>
+                </div>
+                <div class="stage-content">
+                    <p class="description">
+                        Construct a comprehensive prompt integrating all components and let the LLM generate step-by-step reasoning
+                    </p>
+                    <div class="components">
+                        <div class="component-card">
+                            <div class="component-title">Prompt Components</div>
+                            <div class="component-desc">Background info, task instructions, retrieved molecules with similarity scores, CoT strategy steps, strict output format constraints</div>
+                        </div>
+                        <div class="component-card">
+                            <div class="component-title">LLM Processing</div>
+                            <div class="component-desc">Model processes rich context to generate interpretable reasoning trace before final classification (Yes/No)</div>
+                        </div>
+                        <div class="component-card">
+                            <div class="component-title">In-Context Learning</div>
+                            <div class="component-desc">4-shot configuration provides optimal performance within context window constraints (1-shot &lt; 2-shot &lt; 4-shot)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow"></div>
+
+            <!-- Output -->
+            <div class="stage">
+                <div class="stage-header">
+                    <div class="stage-number">✅</div>
+                    <div class="stage-title">Output</div>
+                </div>
+                <div class="stage-content">
+                    <p class="description">
+                        The system produces both a final prediction and human-readable reasoning that chemists can validate
+                    </p>
+                    <div class="components">
+                        <div class="component-card">
+                            <div class="component-title">Prediction</div>
+                            <div class="component-desc">Binary classification: "Yes" or "No" for the queried molecular property</div>
+                        </div>
+                        <div class="component-card">
+                            <div class="component-title">Reasoning Trace</div>
+                            <div class="component-desc">Interpretable step-by-step explanation grounded in chemical principles and retrieved examples</div>
+                        </div>
+                        <div class="component-card">
+                            <div class="component-title">Confidence Signal</div>
+                            <div class="component-desc">Similarity scores and reasoning quality provide implicit confidence indicators for validation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="key-features">
+            <h2>Key Advantages</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🚀</div>
+                    <div class="feature-text">
+                        <div class="feature-title">Zero Training Required</div>
+                        <div class="feature-desc">No pre-training or fine-tuning needed—deploy immediately with any compatible LLM</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <div class="feature-text">
+                        <div class="feature-title">Strong Performance</div>
+                        <div class="feature-desc">Achieves 72-96% of supervised method accuracy and up to 45.7% improvement over direct LLM predictions</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔍</div>
+                    <div class="feature-text">
+                        <div class="feature-title">Interpretable Reasoning</div>
+                        <div class="feature-desc">Human-readable rationales allow chemists to validate predictions and understand decision-making</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🔄</div>
+                    <div class="feature-text">
+                        <div class="feature-title">Multi-Task Adaptability</div>
+                        <div class="feature-desc">Easily adapt across different property types by changing prompts and reference database</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">💰</div>
+                    <div class="feature-text">
+                        <div class="feature-title">Resource Efficient</div>
+                        <div class="feature-desc">Eliminates thousands of GPU hours required for pre-training molecular LLMs</div>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-text">
+                        <div class="feature-title">Low-Resource Scenarios</div>
+                        <div class="feature-desc">Valuable predictions from minimal examples when labeled molecular data is scarce</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
