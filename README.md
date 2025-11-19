@@ -1,2 +1,2 @@
 # MOLRAG_KB
-Knowldege base
+Knowledge base
