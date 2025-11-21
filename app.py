@@ -128,6 +128,15 @@ class MolRAGUI:
 
         return output
 
+    def analyze_molecule(self, smiles: str) -> Tuple[str, str]:
+        """
+        Analyze a molecule - wrapper function for testing
+        Returns: (properties_text, fingerprint_text)
+        """
+        props = self.get_molecular_properties(smiles)
+        fp_info = self.generate_fingerprint_info(smiles)
+        return props, fp_info
+
     def compare_molecules(self, smiles1: str, smiles2: str) -> str:
         """Compare two molecules"""
         if not smiles1 or not smiles2:
