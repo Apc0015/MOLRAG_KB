@@ -139,6 +139,50 @@ python scripts/setup_databases.py
 python scripts/load_knowledge_graphs.py --kg primekg
 ```
 
+## 🚀 Quick Start
+
+### Option 1: Launch Gradio UI (Recommended)
+
+The easiest way to get started - **no database setup required** for basic features!
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Launch UI
+python app.py
+```
+
+Access at **http://localhost:7860** and start predicting molecular properties immediately!
+
+**See [GRADIO_UI_GUIDE.md](GRADIO_UI_GUIDE.md) for complete UI documentation.**
+
+### Option 2: Use Python API
+
+```python
+from src.molrag import MolRAG
+
+# Initialize (works without databases for basic features)
+molrag = MolRAG(auto_init=False)
+molrag.initialize_preprocessing()
+
+# Analyze molecules
+from src.data import SMILESPreprocessor
+preprocessor = SMILESPreprocessor()
+props = preprocessor.get_molecular_properties("CC(C)Cc1ccc(cc1)C(C)C(O)=O")
+print(props)
+```
+
+**See [USAGE_GUIDE.md](USAGE_GUIDE.md) for comprehensive Python API documentation.**
+
+### Option 3: Full Setup with Databases
+
+For complete functionality with knowledge graph retrieval:
+
+**See [QUICKSTART.md](QUICKSTART.md) for step-by-step setup instructions.**
+
+---
+
 ## 🚀 Usage
 
 ### Basic Example
@@ -313,9 +357,21 @@ Edit `config/knowledge_graphs.yaml` to:
 
 ## 📚 Documentation
 
+### Quick Start Guides
+- **[QUICKSTART.md](QUICKSTART.md)**: Complete quick start guide - get up and running in minutes
+- **[PULL_INSTRUCTIONS.md](PULL_INSTRUCTIONS.md)**: How to pull code from the correct git branch
+- **[GRADIO_UI_GUIDE.md](GRADIO_UI_GUIDE.md)**: Complete guide to using the Gradio web interface
+- **[USAGE_GUIDE.md](USAGE_GUIDE.md)**: Comprehensive usage guide for Python API and advanced features
+
+### Technical Documentation
 - **[Architecture Workflow](docs/architecture/molrag_workflow.html)**: Visual guide to MolRAG pipeline
 - **[Graph RAG Blueprint](docs/architecture/graph_rag_blueprint.html)**: Complete technical specifications
 - **[Research Paper](docs/papers/krotkov_et_al_2025_JCIM.pdf)**: Nanostructured Material Design via RAG (JCIM 2025)
+
+### Code Examples
+- **[examples/basic_usage.py](examples/basic_usage.py)**: Basic SMILES preprocessing and fingerprint generation
+- **[examples/advanced_prediction.py](examples/advanced_prediction.py)**: Advanced predictions with custom CoT strategies
+- **[examples/batch_screening.py](examples/batch_screening.py)**: Batch molecular screening workflows
 
 ## 🎯 Roadmap
 
