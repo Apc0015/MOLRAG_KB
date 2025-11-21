@@ -1,0 +1,84 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "MolRAG: Molecular Retrieval-Augmented Generation"
+abstract: "Training-Free Molecular Property Prediction with Large Language Models and Knowledge Graphs. MolRAG combines retrieval-augmented generation with knowledge graph reasoning for molecular property prediction and nanostructured materials design."
+authors:
+  - family-names: "Your Family Name"
+    given-names: "Your Given Name"
+    email: your.email@example.com
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+repository-code: "https://github.com/yourusername/MOLRAG_KB"
+url: "https://github.com/yourusername/MOLRAG_KB"
+license: MIT
+version: 0.1.0
+date-released: 2025-01-21
+keywords:
+  - molecular-property-prediction
+  - retrieval-augmented-generation
+  - knowledge-graphs
+  - graph-neural-networks
+  - large-language-models
+  - drug-discovery
+  - computational-chemistry
+  - nanostructured-materials
+
+references:
+  - type: article
+    title: "Nanostructured Material Design via a Retrieval-Augmented Generation (RAG) Approach Bridging Laboratory Practice and Scientific Literature"
+    authors:
+      - family-names: "Krotkov"
+        given-names: "Nikita A."
+      - family-names: "Sbytov"
+        given-names: "Dmitrii A."
+      - family-names: "Chakhoyan"
+        given-names: "Anna A."
+      - family-names: "Kornienko"
+        given-names: "Polina I."
+      - family-names: "Starikova"
+        given-names: "Anna A."
+      - family-names: "Stepanov"
+        given-names: "Maxim G."
+      - family-names: "Piven"
+        given-names: "Anastasiia O."
+      - family-names: "Aliev"
+        given-names: "Timur A."
+      - family-names: "Orlova"
+        given-names: "Tetiana"
+      - family-names: "Rafayelyan"
+        given-names: "Mushegh S."
+      - family-names: "Skorb"
+        given-names: "Ekaterina V."
+    journal: "Journal of Chemical Information and Modeling"
+    volume: 65
+    start: 11064
+    end: 11078
+    year: 2025
+    publisher:
+      name: "ACS Publications"
+    doi: "10.1021/acs.jcim.xxxx"
+
+  - type: conference-paper
+    title: "MolRAG: Unlocking the Power of LLMs for Molecular Property Prediction"
+    authors:
+      - family-names: "Xian"
+        given-names: "[First Author]"
+    conference:
+      name: "Proceedings of the 63rd Annual Meeting of the Association for Computational Linguistics"
+    start: 15513
+    end: 15531
+    year: 2025
+    publisher:
+      name: "Association for Computational Linguistics"
+
+preferred-citation:
+  type: article
+  title: "Nanostructured Material Design via a Retrieval-Augmented Generation (RAG) Approach"
+  authors:
+    - family-names: "Krotkov"
+      given-names: "Nikita A."
+  journal: "Journal of Chemical Information and Modeling"
+  volume: 65
+  start: 11064
+  end: 11078
+  year: 2025
