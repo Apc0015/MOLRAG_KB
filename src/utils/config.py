@@ -24,6 +24,7 @@ class Config(BaseSettings):
     # API Keys
     openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
     anthropic_api_key: Optional[str] = Field(default=None, env="ANTHROPIC_API_KEY")
+    openrouter_api_key: Optional[str] = Field(default=None, env="OPENROUTER_API_KEY")
     drugbank_api_key: Optional[str] = Field(default=None, env="DRUGBANK_API_KEY")
 
     # Neo4j
