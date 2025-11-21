@@ -25,26 +25,40 @@ Access at **http://localhost:7860**
 
 **Note**: This runs in demo mode with limited features. For full RAG-based predictions:
 
-### Full Setup (5 Minutes)
+### Full Setup
 
 **👉 See [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete database setup**
 
-Quick version:
+#### Quick Demo (5 minutes)
 ```bash
 # 1. Add API key to .env file
 echo "OPENAI_API_KEY=sk-your-key" >> .env
 
 # 2. Start databases and load sample data
 ./scripts/quick_start.sh
+# Select option 1 for quick demo
 
 # 3. Launch UI
 python app.py
 ```
 
-This sets up:
+#### Production Setup with Real Data (20 minutes)
+```bash
+# 1. Add API key to .env file
+echo "OPENAI_API_KEY=sk-your-key" >> .env
+
+# 2. Setup with real PrimeKG data (130K nodes, 4M relationships)
+./scripts/setup_real_data.sh
+
+# 3. Launch UI
+python app.py
+```
+
+**What you get:**
 - ✅ Neo4j, Qdrant, Redis (via Docker)
-- ✅ Sample molecular database
-- ✅ Full RAG prediction capabilities
+- ✅ Real molecular database (PrimeKG: 130,000+ nodes, 4M+ relationships)
+- ✅ Full RAG prediction capabilities with real drug-target-disease data
+- ✅ Production-ready for drug discovery and biomedical research
 
 ## 📚 Complete Documentation
 

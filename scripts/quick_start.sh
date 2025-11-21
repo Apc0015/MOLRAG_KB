@@ -98,12 +98,31 @@ done
 echo -e "${GREEN}[3/5] Initializing databases...${NC}"
 python scripts/setup_databases.py
 
-# Step 4: Load sample data (if available)
-echo -e "${GREEN}[4/5] Loading sample data...${NC}"
-if [ -f "scripts/load_sample_data.py" ]; then
-    python scripts/load_sample_data.py
+# Step 4: Download and load real data
+echo -e "${GREEN}[4/5] Setting up molecular databases...${NC}"
+echo ""
+echo "Choose data setup option:"
+echo "  1) Quick demo (10 sample molecules, <1 minute)"
+echo "  2) Real data (PrimeKG 4M+ relations, ~15 minutes)"
+echo ""
+read -p "Select option (1/2): " -n 1 -r
+echo ""
+
+if [[ $REPLY =~ ^[2]$ ]]; then
+    echo -e "${GREEN}Downloading real PrimeKG data...${NC}"
+    python scripts/download_real_data.py --dataset primekg
+
+    if [ $? -eq 0 ]; then
+        echo -e "${GREEN}Loading PrimeKG into databases...${NC}"
+        python scripts/load_knowledge_graphs.py
+    else
+        echo -e "${RED}Failed to download PrimeKG${NC}"
+        echo "Falling back to sample data..."
+        python scripts/load_sample_data.py
+    fi
 else
-    echo -e "${YELLOW}Note: No sample data loader found. You can load your own data later.${NC}"
+    echo -e "${GREEN}Loading sample data (quick demo)...${NC}"
+    python scripts/load_sample_data.py
 fi
 
 # Step 5: Complete
