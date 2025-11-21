@@ -1,15 +1,17 @@
 # Core Dependencies
-python>=3.9
+# Python 3.9+ required (specified in setup.py or pyproject.toml)
 
 # Molecular Chemistry
 rdkit>=2023.9.1
 rdkit-pypi>=2022.9.5
 
 # Graph Neural Networks
+# Note: Install torch first, then torch-geometric extensions
 torch>=2.0.0
-torch-geometric>=2.3.0
-torch-scatter>=2.1.0
-torch-sparse>=0.6.0
+# torch-geometric>=2.3.0
+# torch-scatter>=2.1.0
+# torch-sparse>=0.6.0
+# Install these separately after torch: pip install torch-scatter torch-sparse torch-geometric -f https://data.pyg.org/whl/torch-2.8.0+cpu.html
 
 # Vector Databases
 qdrant-client>=1.7.0
