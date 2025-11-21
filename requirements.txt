@@ -1,0 +1,97 @@
+# Core Dependencies
+python>=3.9
+
+# Molecular Chemistry
+rdkit>=2023.9.1
+rdkit-pypi>=2022.9.5
+
+# Graph Neural Networks
+torch>=2.0.0
+torch-geometric>=2.3.0
+torch-scatter>=2.1.0
+torch-sparse>=0.6.0
+
+# Vector Databases
+qdrant-client>=1.7.0
+# milvus>=2.3.0  # Alternative to Qdrant
+
+# Graph Database
+neo4j>=5.14.0
+py2neo>=2021.2.3
+
+# LLM Frameworks
+llama-index>=0.9.0
+llama-index-graph-stores-neo4j>=0.1.0
+langchain>=0.1.0
+langchain-community>=0.0.10
+langchain-openai>=0.0.5
+openai>=1.6.0
+anthropic>=0.8.0  # For Claude
+
+# Data Processing
+pandas>=2.0.0
+numpy>=1.24.0
+scipy>=1.10.0
+scikit-learn>=1.3.0
+
+# Embeddings & NLP
+sentence-transformers>=2.2.0
+transformers>=4.35.0
+tokenizers>=0.15.0
+
+# Knowledge Graph Tools
+rdflib>=7.0.0
+networkx>=3.0
+pyvis>=0.3.2  # For graph visualization
+
+# API & Web
+fastapi>=0.104.0
+uvicorn>=0.24.0
+gradio>=4.0.0
+requests>=2.31.0
+httpx>=0.25.0
+
+# Database & Caching
+redis>=5.0.0
+pymongo>=4.6.0  # For metadata storage
+sqlalchemy>=2.0.0
+psycopg2-binary>=2.9.0  # PostgreSQL
+
+# Configuration
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+
+# Logging & Monitoring
+loguru>=0.7.0
+tenacity>=8.2.0  # Retry logic
+tqdm>=4.66.0
+
+# Evaluation & Metrics
+matplotlib>=3.7.0
+seaborn>=0.13.0
+plotly>=5.17.0
+scikit-metrics>=0.1.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-mock>=3.12.0
+
+# Code Quality
+black>=23.11.0
+flake8>=6.1.0
+mypy>=1.7.0
+isort>=5.12.0
+
+# Utilities
+click>=8.1.7  # CLI
+python-multipart>=0.0.6
+aiofiles>=23.2.0
+typing-extensions>=4.8.0
+
+# Optional: Pre-trained Models
+# dgl>=1.1.0  # Deep Graph Library
+# ogb>=1.3.6  # Open Graph Benchmark datasets

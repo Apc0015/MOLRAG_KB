@@ -1,0 +1,154 @@
+# Knowledge Graph Configuration
+# Based on the Graph RAG Blueprint specifications
+
+knowledge_graphs:
+  # Primary Knowledge Graph - Start with this
+  primekg:
+    enabled: true
+    priority: 1
+    scale:
+      relationships: 4000000
+      entity_types: 10
+      relationship_types: 29
+    features:
+      - disease_centric
+      - multimodal_text
+      - drug_gene_protein_integration
+    source: "https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/IXA7BM"
+    best_for: "general_molecular_prediction"
+
+  # Clinical Applications
+  spoke:
+    enabled: false  # Enable for clinical applications
+    priority: 2
+    scale:
+      edges: 53000000
+      node_types: 21
+      update_frequency: "weekly"
+    features:
+      - ehr_integration
+      - food_compound_links
+      - microbiome_data
+    source: "https://spoke.ucsf.edu"
+    best_for: "clinical_applications"
+
+  # Reproducible Research
+  hetionet:
+    enabled: true
+    priority: 3
+    scale:
+      nodes: 47000
+      relationships: 2250000
+      types: 24
+    features:
+      - dwpc_scoring
+      - drug_repurposing
+      - static_version
+    source: "https://het.io"
+    best_for: "reproducible_research"
+
+  # Drug Target Interactions
+  drugbank:
+    enabled: true
+    priority: 4
+    scale:
+      drugs: 10000
+      detailed_annotations: true
+    features:
+      - drug_target_interactions
+      - clinical_trials
+      - ddi_information
+    source: "https://go.drugbank.com/releases/latest"
+    best_for: "target_identification"
+    api_key_required: true
+
+  # Bioactivity Data
+  chembl:
+    enabled: true
+    priority: 5
+    scale:
+      bioactivities: 2000000
+      molecules: 456000
+      targets: 4000
+      bioassays: 1310
+    features:
+      - dose_response_data
+      - ic50_values
+      - activity_data
+    source: "https://www.ebi.ac.uk/chembl/"
+    best_for: "activity_prediction"
+
+  # Pathway Analysis
+  reactome:
+    enabled: true
+    priority: 6
+    scale:
+      pathways: "hierarchical"
+      format: ["neo4j", "rdf"]
+    features:
+      - expert_curated
+      - mechanism_of_action
+      - pathway_centric
+    source: "https://reactome.org/download-data"
+    best_for: "pathway_analysis"
+
+# Relationship Types (29 types in PrimeKG)
+relationship_types:
+  molecule_protein:
+    - targets
+    - binds
+    - modulates
+    - substrate_of
+    - inhibits
+    - activates
+
+  molecule_disease:
+    - treats
+    - contraindicates
+    - causes
+    - associates_with
+
+  protein_disease:
+    - genetic_association
+    - pathogenic_in
+    - therapeutic_target
+
+  pathway:
+    - participates_in
+    - regulates
+    - upstream_of
+    - downstream_of
+
+  molecule_molecule:
+    - similar_to
+    - interacts_with  # Drug-drug interactions
+    - metabolizes_to
+
+# Neo4j Database Configuration
+neo4j:
+  uri: "bolt://localhost:7687"
+  user: "${NEO4J_USER}"
+  password: "${NEO4J_PASSWORD}"
+  database: "molrag"
+
+  # Indexing strategy for performance
+  indexes:
+    - "molecular_weight"
+    - "smiles"
+    - "target_id"
+    - "disease_id"
+    - "pathway_id"
+
+  # Query optimization
+  query_config:
+    max_hops: 2
+    timeout_seconds: 30
+    batch_size: 1000
+    enable_bidirectional_search: true
+
+# Biolink Model Standardization
+biolink:
+  enabled: true
+  version: "3.5.0"
+  semantic_mapping: true
+  umls_cui_mapping: true  # Cross-database identifier mapping

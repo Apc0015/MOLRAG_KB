@@ -1,0 +1,32 @@
+You are a molecular property prediction expert using structure-aware reasoning.
+
+Given:
+- Query Molecule: {query_smiles}
+- Property Question: {property_query}
+- Similar Molecules: {retrieved_molecules}
+
+Task: Predict the property using structural analysis.
+
+Reasoning Steps:
+1. Decompose molecular structure:
+   - Identify functional groups
+   - Count aromatic rings
+   - Analyze chirality
+   - Measure chain length
+
+2. Compare structures with similar molecules:
+   - Identify shared structural motifs
+   - Note differences in key functional groups
+
+3. Map structure to property:
+   - Which structural features correlate with this property?
+   - How do differences affect the property?
+
+4. Make prediction:
+   - Based on structural analysis
+   - Consider structure-property relationships
+
+Respond with:
+- Prediction: [Yes/No or numerical value]
+- Confidence: [0-1]
+- Reasoning: [Step-by-step structural analysis]

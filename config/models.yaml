@@ -1,0 +1,289 @@
+# Model Configuration
+# Based on Technical Stack specifications from blueprint
+
+# Vector Database Configuration
+vector_db:
+  provider: "qdrant"  # Options: qdrant, milvus
+
+  qdrant:
+    url: "http://localhost:6333"
+    collection_name: "molecular_fingerprints"
+
+    # HNSW indexing parameters
+    hnsw_config:
+      m: 16  # Number of connections per layer
+      ef_construct: 200  # Size of dynamic candidate list for construction
+      ef_search: 100  # Size of dynamic candidate list for search
+
+    # Product quantization for memory reduction
+    quantization:
+      enabled: true
+      type: "scalar"
+
+    vector_size: 2048  # Morgan fingerprint dimension
+    distance_metric: "Cosine"
+
+  milvus:
+    host: "localhost"
+    port: 19530
+    collection_name: "molecular_fingerprints"
+    index_type: "HNSW"
+    metric_type: "IP"  # Inner Product
+
+# Molecular Fingerprint Configuration
+fingerprints:
+  morgan:
+    type: "ECFP4"
+    radius: 2
+    n_bits: 2048
+    use_features: false
+    use_chirality: true
+
+  similarity_metric: "Tanimoto"  # Options: Tanimoto, Dice
+
+  # Preprocessing
+  preprocessing:
+    canonicalize_smiles: true
+    remove_salts: true
+    neutralize_charges: false
+
+# Graph Neural Network Configuration
+gnn:
+  # Pre-trained model selection
+  pretrained_model: "kpgt"  # Options: kpgt, kano, grover
+
+  kpgt:
+    enabled: true
+    model_path: "models/kpgt_pretrained.pth"
+    embedding_dim: 512
+
+    # ElementKG knowledge integration
+    use_element_kg: true
+
+    # Pre-training details
+    pretraining:
+      dataset: "ChEMBL"
+      num_molecules: 2000000
+
+    # Expected improvement
+    performance_gain: "2-7%"  # Over fingerprints alone
+
+  kano:
+    enabled: false
+    model_path: "models/kano_pretrained.pth"
+
+  # Inference settings
+  inference:
+    batch_size: 32
+    device: "cuda"  # Options: cuda, cpu
+    num_workers: 4
+
+# Large Language Model Configuration
+llm:
+  # Primary synthesis agent
+  primary:
+    provider: "openai"
+    model: "gpt-4-turbo-preview"
+    temperature: 0.1
+    max_tokens: 2048
+    top_p: 0.95
+
+  # Secondary agent for extraction
+  secondary:
+    provider: "openai"
+    model: "gpt-3.5-turbo"
+    temperature: 0.0
+    max_tokens: 1024
+    use_for: ["entity_extraction", "preprocessing"]
+
+  # Alternative: Anthropic Claude
+  claude:
+    enabled: false
+    model: "claude-3-sonnet-20240229"
+    temperature: 0.1
+    max_tokens: 2048
+
+  # Cost optimization
+  caching:
+    enabled: true
+    provider: "redis"
+    ttl_days: 7
+
+  # Response streaming
+  streaming: false
+
+# Retrieval Configuration
+retrieval:
+  # Hybrid retrieval strategy
+  strategy: "hybrid"  # Options: vector_only, graph_only, hybrid, triple
+
+  # Triple retrieval system
+  triple_retrieval:
+    vector:
+      enabled: true
+      top_k: 50
+      weight: 0.4
+
+    graph:
+      enabled: true
+      top_k: 40
+      weight: 0.3
+      max_hops: 2
+      metapath_reasoning: true
+
+    gnn:
+      enabled: true
+      top_k: 30
+      weight: 0.3
+
+  # Re-ranking formula
+  # Combined_Score = 0.4 × Tanimoto + 0.3 × PathRelevance + 0.3 × GNN_Similarity
+  reranking:
+    enabled: true
+    final_top_k: 10
+    normalize_scores: true
+
+    # Path relevance calculation
+    path_relevance:
+      edge_confidence_weight: 0.6
+      hop_distance_penalty: 0.2  # per hop
+      relationship_type_boost:
+        binds: 1.0
+        treats: 0.9
+        associates_with: 0.7
+
+# Chain-of-Thought Strategies
+cot_strategies:
+  # Structure-aware reasoning
+  struct_cot:
+    enabled: true
+    prompt_template: "prompts/struct_cot.txt"
+    focus:
+      - functional_groups
+      - aromatic_rings
+      - chirality
+      - chain_length
+
+  # Similarity-aware reasoning (best performer)
+  sim_cot:
+    enabled: true
+    prompt_template: "prompts/sim_cot.txt"
+    principle: "similar_molecules_similar_properties"
+    performance_note: "Outperforms Struct-CoT on 6/7 datasets"
+
+  # Path-based reasoning (NEW)
+  path_cot:
+    enabled: true
+    prompt_template: "prompts/path_cot.txt"
+    focus:
+      - biological_pathways
+      - mechanistic_reasoning
+      - multi_hop_relationships
+
+  # In-context learning
+  few_shot:
+    num_examples: 4
+    selection_strategy: "similarity_based"
+    max_context_window: 8000  # tokens
+
+# Multi-Agent Configuration (CLADD Pattern)
+agents:
+  planning_agent:
+    enabled: true
+    role: "query_classification"
+    classifies:
+      - structural
+      - mechanistic
+      - multi_property
+
+  graph_retrieval_agent:
+    enabled: true
+    role: "kg_queries"
+    features:
+      - cypher_execution
+      - anchoring_for_novel_molecules
+
+  vector_retrieval_agent:
+    enabled: true
+    role: "fingerprint_search"
+    configurable_top_k: true
+
+  gnn_prediction_agent:
+    enabled: true
+    role: "gnn_context_application"
+    model: "kpgt"
+
+  synthesis_agent:
+    enabled: true
+    role: "multi_source_integration"
+    model: "gpt-4"
+    alternative: "claude-3"
+
+  # Orchestration
+  orchestration:
+    framework: "langchain"  # Options: langchain, llama_index
+    tool_calling: true
+    structured_output: true
+    result_fusion: "weighted_voting"  # Options: weighted_voting, llm_synthesis
+
+# Performance Optimization
+optimization:
+  # Query routing
+  query_routing:
+    enabled: true
+    strategy: "entity_density_based"
+    rules:
+      - condition: "relationship_count > 10"
+        action: "graph_first"
+      - condition: "relationship_count <= 10"
+        action: "vector_first"
+
+  # Parallel execution
+  parallel_execution:
+    enabled: true
+    max_concurrent_retrievals: 3
+
+  # Caching
+  embedding_cache:
+    enabled: true
+    provider: "redis"
+    ttl_hours: 168  # 7 days
+
+  # Community detection (for large graphs)
+  community_detection:
+    algorithm: "leiden"
+    enabled: false  # Enable for graphs with 10M+ nodes
+
+# Evaluation Metrics
+evaluation:
+  retrieval_quality:
+    - recall_at_k: [5, 10, 20]
+    - precision_at_k: [5, 10, 20]
+    - mrr: true
+    - avg_tanimoto: true
+
+  prediction_quality:
+    classification:
+      - roc_auc
+      - aupr
+      - accuracy
+      - f1_score
+    regression:
+      - rmse
+      - mae
+      - r2_score
+
+  explanation_quality:
+    - path_relevance_score
+    - expert_validation_rate
+    - citation_accuracy
+    - hallucination_rate
+
+  # Validation targets
+  targets:
+    recall_at_10: 0.80
+    precision_at_10: 0.70
+    mrr: 0.75
+    roc_auc: 0.75
+    expert_approval: 0.75
+    literature_verification: 0.70
