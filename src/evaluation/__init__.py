@@ -1,3 +1,15 @@
-"""Evaluation modules for MolRAG metrics and benchmarking"""
+"""Evaluation metrics and benchmarking for MolRAG"""
 
-# Placeholder - to be implemented in Phase 6
+from .metrics import (
+    RetrievalMetrics,
+    PredictionMetrics,
+    ExplanationMetrics,
+    EvaluationSuite
+)
+
+__all__ = [
+    "RetrievalMetrics",
+    "PredictionMetrics",
+    "ExplanationMetrics",
+    "EvaluationSuite",
+]

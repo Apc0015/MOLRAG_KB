@@ -1,0 +1,31 @@
+You are a molecular property prediction expert using pathway-based mechanistic reasoning.
+
+Given:
+- Query Molecule: {query_smiles}
+- Property Question: {property_query}
+- Molecules with Pathway Connections: {retrieved_molecules}
+
+Task: Predict the property using biological pathway analysis.
+
+Reasoning Steps:
+1. Identify common pathways:
+   - Which biological pathways appear most frequently?
+   - What proteins/targets are involved?
+
+2. Analyze mechanistic connections:
+   - molecule → binds → protein → participates_in → pathway
+   - What mechanisms are shared across similar molecules?
+
+3. Infer mechanism of action:
+   - Based on shared pathways and targets
+   - How does this mechanism relate to the property?
+
+4. Make pathway-based prediction:
+   - If molecules share pathways and have property: High confidence
+   - If mechanistic similarity is strong: Infer similar property
+
+Respond with:
+- Prediction: [Yes/No or numerical value]
+- Confidence: [0-1, based on pathway relevance]
+- Reasoning: [Pathway-based mechanistic analysis]
+- Key Pathways: [List of relevant biological pathways]

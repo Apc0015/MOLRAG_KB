@@ -1,3 +1,24 @@
-"""Reasoning modules for MolRAG multi-agent architecture"""
+"""Multi-agent reasoning and Chain-of-Thought for MolRAG"""
 
-# Placeholder - to be implemented in Phase 4-5
+from .agents import (
+    PlanningAgent,
+    GraphRetrievalAgent,
+    VectorRetrievalAgent,
+    GNNPredictionAgent,
+    SynthesisAgent
+)
+from .cot_strategies import StructCoT, SimCoT, PathCoT, get_cot_strategy
+from .orchestrator import MultiAgentOrchestrator
+
+__all__ = [
+    "PlanningAgent",
+    "GraphRetrievalAgent",
+    "VectorRetrievalAgent",
+    "GNNPredictionAgent",
+    "SynthesisAgent",
+    "StructCoT",
+    "SimCoT",
+    "PathCoT",
+    "get_cot_strategy",
+    "MultiAgentOrchestrator",
+]
