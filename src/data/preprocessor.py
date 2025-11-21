@@ -7,7 +7,15 @@ Based on blueprint specifications for molecular preprocessing
 from typing import Optional
 
 from rdkit import Chem
-from rdkit.Chem import Descriptors, MolStandardize
+from rdkit.Chem import Descriptors
+try:
+    # Try new RDKit API (2023+)
+    from rdkit.Chem.MolStandardize import rdMolStandardize
+    MOLSTANDARDIZE_NEW_API = True
+except ImportError:
+    # Fall back to older API
+    from rdkit.Chem import MolStandardize
+    MOLSTANDARDIZE_NEW_API = False
 
 from ..utils.logger import get_logger
 
@@ -45,10 +53,16 @@ class SMILESPreprocessor:
 
         # Initialize standardizer components
         if remove_salts:
-            self.salt_remover = MolStandardize.fragment.LargestFragmentChooser()
+            if MOLSTANDARDIZE_NEW_API:
+                self.salt_remover = rdMolStandardize.LargestFragmentChooser()
+            else:
+                self.salt_remover = MolStandardize.fragment.LargestFragmentChooser()
 
         if neutralize_charges:
-            self.uncharger = MolStandardize.charge.Uncharger()
+            if MOLSTANDARDIZE_NEW_API:
+                self.uncharger = rdMolStandardize.Uncharger()
+            else:
+                self.uncharger = MolStandardize.charge.Uncharger()
 
         logger.info(
             f"Initialized SMILES preprocessor: "

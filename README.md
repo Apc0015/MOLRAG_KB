@@ -6,7 +6,32 @@
 
 **Training-Free Molecular Property Prediction with Large Language Models and Knowledge Graphs**
 
-MolRAG is an advanced AI system that combines retrieval-augmented generation (RAG) with knowledge graph reasoning for molecular property prediction and nanostructured materials design. Unlike traditional machine learning approaches that require extensive training data and computational resources, MolRAG achieves competitive performance through intelligent retrieval and reasoning.
+## ⚡ Quick Start
+
+```bash
+# Clone and install
+git clone https://github.com/Apc0015/MOLRAG_KB.git
+cd MOLRAG_KB
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+
+# Launch UI
+python app.py
+```
+
+Access at **http://localhost:7860**
+
+## 📚 Complete Documentation
+
+**👉 See [GUIDE.md](GUIDE.md) for comprehensive documentation including:**
+- Installation & Setup
+- Running the UI (Demo & Full Mode)
+- Testing Instructions
+- Usage Examples with SMILES
+- Configuration Details
+- Troubleshooting
+- Python API Documentation
 
 ## 🔬 Key Features
 
@@ -26,7 +51,21 @@ MolRAG is an advanced AI system that combines retrieval-augmented generation (RA
 | Drug-Target Interaction | AUPR 0.68 | AUPR 0.92 | **33.3% error reduction** |
 | PubMedQA | 57.9% (GPT-4) | 86.3% | **+28.4%** |
 
-## 🏗️ Architecture
+## 🧪 Testing
+
+```bash
+# Quick test
+python test_basic_imports.py
+
+# Full validation
+python test_structure.py
+```
+
+## 📖 Documentation
+
+- **[GUIDE.md](GUIDE.md)** - Complete setup, usage, and troubleshooting guide
+- **[CITATION.cff](CITATION.cff)** - Citation information
+- **[examples/](examples/)** - Code examples
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
