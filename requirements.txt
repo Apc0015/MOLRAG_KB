@@ -95,3 +95,4 @@ typing-extensions>=4.8.0
 # Optional: Pre-trained Models
 # dgl>=1.1.0  # Deep Graph Library
 # ogb>=1.3.6  # Open Graph Benchmark datasets
+gradio>=4.0.0
