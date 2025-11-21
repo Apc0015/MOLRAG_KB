@@ -1,0 +1,105 @@
+version: '3.8'
+
+services:
+  # Neo4j - Knowledge Graph Database
+  neo4j:
+    image: neo4j:5.15.0
+    container_name: molrag_neo4j
+    ports:
+      - "7474:7474"  # HTTP
+      - "7687:7687"  # Bolt
+    environment:
+      - NEO4J_AUTH=neo4j/molrag_password_2024
+      - NEO4J_PLUGINS=["apoc", "graph-data-science"]
+      - NEO4J_dbms_security_procedures_unrestricted=apoc.*,gds.*
+      - NEO4J_dbms_memory_heap_initial__size=512m
+      - NEO4J_dbms_memory_heap_max__size=2G
+      - NEO4J_dbms_memory_pagecache_size=1G
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+    healthcheck:
+      test: ["CMD", "neo4j", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - molrag_network
+
+  # Qdrant - Vector Database
+  qdrant:
+    image: qdrant/qdrant:v1.7.4
+    container_name: molrag_qdrant
+    ports:
+      - "6333:6333"  # HTTP API
+      - "6334:6334"  # gRPC API
+    environment:
+      - QDRANT__SERVICE__GRPC_PORT=6334
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - molrag_network
+
+  # Redis - Caching Layer
+  redis:
+    image: redis:7.2-alpine
+    container_name: molrag_redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass molrag_redis_2024 --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - molrag_network
+
+  # PostgreSQL - Metadata Storage (Optional)
+  postgres:
+    image: postgres:16-alpine
+    container_name: molrag_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=molrag
+      - POSTGRES_PASSWORD=molrag_pg_2024
+      - POSTGRES_DB=molrag_metadata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U molrag"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - molrag_network
+
+volumes:
+  neo4j_data:
+    driver: local
+  neo4j_logs:
+    driver: local
+  neo4j_import:
+    driver: local
+  neo4j_plugins:
+    driver: local
+  qdrant_data:
+    driver: local
+  redis_data:
+    driver: local
+  postgres_data:
+    driver: local
+
+networks:
+  molrag_network:
+    driver: bridge

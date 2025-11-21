@@ -273,46 +273,101 @@ class MolRAGUI:
 **Query Molecule**: `{smiles}`
 **Property Question**: {property_query}
 
-## ⚠️ Demo Mode
-Full prediction requires database setup:
-1. Neo4j (Knowledge Graph)
-2. Qdrant (Vector Database)
-3. Redis (Caching)
+## ⚠️ Demo Mode Active
+The full RAG prediction system requires:
+- ✅ Databases (Neo4j, Qdrant, Redis)
+- ✅ API keys (OpenAI/Anthropic/OpenRouter)
+- ✅ Molecular data loaded
 
-Run: `python scripts/setup_databases.py`
+**Current Status**: Databases not connected or no data loaded
 
 ## 🎯 Mock Prediction
-**Result**: Unknown (databases required)
+**Result**: Unknown (full setup required)
 **Confidence**: N/A
-
 **Strategy**: {cot_strategy}
+
+---
+
+### 🚀 Quick Setup (5 minutes)
+
+See **[SETUP_GUIDE.md](SETUP_GUIDE.md)** for detailed instructions.
+
+**Quick version:**
+```bash
+# 1. Add API key to .env
+echo "OPENAI_API_KEY=sk-your-key" >> .env
+
+# 2. Run quick start
+./scripts/quick_start.sh
+
+# 3. Restart UI
+python app.py
+```
 """
 
-        reasoning_text = f"""# Reasoning Chain (Mock)
+        reasoning_text = f"""# Reasoning Chain (Demo)
 
-This is a demonstration mode. To get actual predictions:
+To enable full MolRAG predictions with real molecular reasoning:
 
-1. **Setup databases**:
-   ```bash
-   python scripts/setup_databases.py
-   ```
+## Option 1: Quick Start (Recommended)
+```bash
+# Sets up everything automatically
+./scripts/quick_start.sh
+```
 
-2. **Load knowledge graphs**:
-   ```bash
-   python scripts/load_knowledge_graphs.py --kg primekg
-   ```
+## Option 2: Manual Setup
 
-3. **Index molecules**:
-   Load your molecular database into Qdrant and Neo4j
+### Step 1: Start Databases
+```bash
+docker-compose up -d
+```
 
-4. **Get API keys**:
-   - OpenAI API key for GPT-4
-   - Or Anthropic API key for Claude
+### Step 2: Initialize
+```bash
+python scripts/setup_databases.py
+```
 
-Then restart the UI and predictions will work!
+### Step 3: Load Sample Data
+```bash
+python scripts/load_sample_data.py
+```
+
+### Step 4: Add API Key
+Edit `.env` and add:
+```
+OPENAI_API_KEY=sk-your-key
+```
+
+### Step 5: Restart UI
+```bash
+python app.py
+```
+
+---
+
+**What's Working Now:**
+- ✅ SMILES validation
+- ✅ Molecular properties
+- ✅ Fingerprint generation
+- ✅ Similarity comparison
+
+**What Needs Setup:**
+- ❌ RAG-based prediction
+- ❌ Knowledge graph reasoning
+- ❌ Vector similarity search
+
+See **SETUP_GUIDE.md** for complete instructions.
 """
 
-        status_text = "⚠️ **Demo Mode** - Databases not configured"
+        status_text = """⚠️ **Demo Mode** - Databases Not Connected
+
+To enable full predictions, run:
+```bash
+./scripts/quick_start.sh
+```
+
+See [SETUP_GUIDE.md](SETUP_GUIDE.md) for details.
+"""
 
         return result_text, reasoning_text, status_text
 

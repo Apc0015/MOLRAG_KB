@@ -8,6 +8,7 @@
 
 ## ⚡ Quick Start
 
+### Basic Installation (Demo Mode)
 ```bash
 # Clone and install
 git clone https://github.com/Apc0015/MOLRAG_KB.git
@@ -16,22 +17,46 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 
-# Launch UI
+# Launch UI (basic features only)
 python app.py
 ```
 
 Access at **http://localhost:7860**
 
+**Note**: This runs in demo mode with limited features. For full RAG-based predictions:
+
+### Full Setup (5 Minutes)
+
+**👉 See [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete database setup**
+
+Quick version:
+```bash
+# 1. Add API key to .env file
+echo "OPENAI_API_KEY=sk-your-key" >> .env
+
+# 2. Start databases and load sample data
+./scripts/quick_start.sh
+
+# 3. Launch UI
+python app.py
+```
+
+This sets up:
+- ✅ Neo4j, Qdrant, Redis (via Docker)
+- ✅ Sample molecular database
+- ✅ Full RAG prediction capabilities
+
 ## 📚 Complete Documentation
 
-**👉 See [GUIDE.md](GUIDE.md) for comprehensive documentation including:**
-- Installation & Setup
-- Running the UI (Demo & Full Mode)
-- Testing Instructions
-- Usage Examples with SMILES
-- Configuration Details
-- Troubleshooting
-- Python API Documentation
+- **[SETUP_GUIDE.md](SETUP_GUIDE.md)** - Full database setup and configuration
+- **[GUIDE.md](GUIDE.md)** - Comprehensive documentation including:
+  - Installation & Setup
+  - Running the UI (Demo & Full Mode)
+  - Testing Instructions
+  - Usage Examples with SMILES
+  - Configuration Details
+  - Troubleshooting
+  - Python API Documentation
 
 ## 🔬 Key Features
 
