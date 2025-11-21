@@ -98,31 +98,27 @@ done
 echo -e "${GREEN}[3/5] Initializing databases...${NC}"
 python scripts/setup_databases.py
 
-# Step 4: Download and load real data
-echo -e "${GREEN}[4/5] Setting up molecular databases...${NC}"
-echo ""
-echo "Choose data setup option:"
-echo "  1) Quick demo (10 sample molecules, <1 minute)"
-echo "  2) Real data (PrimeKG 4M+ relations, ~15 minutes)"
-echo ""
-read -p "Select option (1/2): " -n 1 -r
+# Step 4: Download and load REAL production data (PrimeKG)
+echo -e "${GREEN}[4/5] Downloading and loading production molecular databases...${NC}"
+echo -e "${YELLOW}This will download PrimeKG (130K+ nodes, 4M+ relationships)${NC}"
+echo -e "${YELLOW}Size: ~500MB | Time: ~15-20 minutes${NC}"
 echo ""
 
-if [[ $REPLY =~ ^[2]$ ]]; then
-    echo -e "${GREEN}Downloading real PrimeKG data...${NC}"
-    python scripts/download_real_data.py --dataset primekg
+echo -e "${GREEN}Downloading PrimeKG from Harvard Medical School...${NC}"
+python scripts/download_real_data.py --dataset primekg
 
-    if [ $? -eq 0 ]; then
-        echo -e "${GREEN}Loading PrimeKG into databases...${NC}"
-        python scripts/load_knowledge_graphs.py
-    else
-        echo -e "${RED}Failed to download PrimeKG${NC}"
-        echo "Falling back to sample data..."
-        python scripts/load_sample_data.py
-    fi
-else
-    echo -e "${GREEN}Loading sample data (quick demo)...${NC}"
-    python scripts/load_sample_data.py
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to download PrimeKG${NC}"
+    echo -e "${RED}Cannot proceed without real data${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Loading PrimeKG into Neo4j and Qdrant...${NC}"
+python scripts/load_knowledge_graphs.py
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to load knowledge graphs${NC}"
+    exit 1
 fi
 
 # Step 5: Complete
