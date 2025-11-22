@@ -98,12 +98,27 @@ done
 echo -e "${GREEN}[3/5] Initializing databases...${NC}"
 python scripts/setup_databases.py
 
-# Step 4: Load sample data (if available)
-echo -e "${GREEN}[4/5] Loading sample data...${NC}"
-if [ -f "scripts/load_sample_data.py" ]; then
-    python scripts/load_sample_data.py
-else
-    echo -e "${YELLOW}Note: No sample data loader found. You can load your own data later.${NC}"
+# Step 4: Download and load REAL production data (PrimeKG)
+echo -e "${GREEN}[4/5] Downloading and loading production molecular databases...${NC}"
+echo -e "${YELLOW}This will download PrimeKG (130K+ nodes, 4M+ relationships)${NC}"
+echo -e "${YELLOW}Size: ~500MB | Time: ~15-20 minutes${NC}"
+echo ""
+
+echo -e "${GREEN}Downloading PrimeKG from Harvard Medical School...${NC}"
+python scripts/download_real_data.py --dataset primekg
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to download PrimeKG${NC}"
+    echo -e "${RED}Cannot proceed without real data${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}Loading PrimeKG into Neo4j and Qdrant...${NC}"
+python scripts/load_knowledge_graphs.py
+
+if [ $? -ne 0 ]; then
+    echo -e "${RED}Failed to load knowledge graphs${NC}"
+    exit 1
 fi
 
 # Step 5: Complete

@@ -9,7 +9,17 @@ Complete guide to set up MolRAG with full database infrastructure.
 - **API Key** (OpenAI, Anthropic, or OpenRouter)
 - **8GB RAM minimum** (16GB recommended)
 
-## Quick Start (5 Minutes)
+## Quick Start Options
+
+### Option A: Quick Demo (5 Minutes)
+For testing with sample data
+
+### Option B: Real Data Setup (20 Minutes)
+For production use with 4M+ real relationships
+
+---
+
+## Quick Start (Demo Mode)
 
 ### 1. Get API Keys
 
@@ -41,10 +51,14 @@ chmod +x scripts/quick_start.sh
 ./scripts/quick_start.sh
 ```
 
+**You'll be prompted to choose:**
+- **Option 1**: Quick demo with 10 sample molecules (<1 minute)
+- **Option 2**: Real PrimeKG data with 4M+ relationships (~15 minutes)
+
 This will:
 - ✅ Start all required databases (Neo4j, Qdrant, Redis, PostgreSQL)
 - ✅ Initialize database schemas and indexes
-- ✅ Load sample molecular data for testing
+- ✅ Download and load molecular data (sample or real)
 - ✅ Verify all connections
 
 ### 4. Launch the UI
@@ -65,13 +79,17 @@ The setup created:
 - **Redis** (port 6379): Caching layer for fast queries
 - **PostgreSQL** (port 5432): Metadata storage
 
-### 🧬 Sample Data
-10 molecules with known properties:
-- Ibuprofen (anti-inflammatory)
-- Aspirin (analgesic)
-- Caffeine (stimulant)
-- Ethanol (toxic)
-- And 6 more...
+### 🧬 Data Options
+**Sample Data** (Quick demo):
+- 10 molecules with known properties
+- Ibuprofen, Aspirin, Caffeine, Ethanol, etc.
+- Good for testing basic functionality
+
+**Real Data** (Production):
+- **PrimeKG**: 130,000+ nodes, 4,000,000+ relationships
+- **Includes**: Drugs, proteins, diseases, pathways, biological processes
+- **Sources**: Integrated from multiple databases (DrugBank, MONDO, GO, Reactome)
+- **Use cases**: Real molecular predictions, drug discovery, biomedical research
 
 ## Verify Installation
 
@@ -156,6 +174,116 @@ python scripts/load_sample_data.py
 ```bash
 python app.py
 ```
+
+## Real Data Setup (Production)
+
+For production use with real molecular databases instead of samples:
+
+### Quick Method
+
+```bash
+chmod +x scripts/setup_real_data.sh
+./scripts/setup_real_data.sh
+```
+
+This will:
+- Download PrimeKG (~500MB, 15 minutes)
+- Load 130,000+ nodes and 4M+ relationships
+- Index all data in Neo4j and Qdrant
+- Verify the installation
+
+### Manual Method
+
+#### 1. Download PrimeKG
+
+```bash
+python scripts/download_real_data.py --dataset primekg
+```
+
+This downloads the full PrimeKG knowledge graph:
+- **Size**: ~500MB compressed
+- **Nodes**: 130,000+ (drugs, proteins, diseases, pathways)
+- **Relationships**: 4,000,000+
+- **Source**: Harvard Medical School Dataverse
+- **Time**: ~10-15 minutes depending on connection
+
+#### 2. Load into Databases
+
+```bash
+python scripts/load_knowledge_graphs.py
+```
+
+This processes and loads:
+- Neo4j: All nodes and relationships
+- Qdrant: Molecular fingerprints for vector search
+- Creates indexes for fast queries
+- **Time**: ~5-10 minutes
+
+#### 3. Verify
+
+```bash
+python -c "
+from src.utils import Config, Neo4jConnector
+config = Config()
+neo4j = Neo4jConnector(config.neo4j_uri, config.neo4j_user, config.neo4j_password)
+result = neo4j.execute_query('MATCH (n) RETURN count(n) as count')
+print(f'Nodes: {result[0][\"count\"]:,}')
+result = neo4j.execute_query('MATCH ()-[r]->() RETURN count(r) as count')
+print(f'Relationships: {result[0][\"count\"]:,}')
+"
+```
+
+Expected output:
+```
+Nodes: 130,000+
+Relationships: 4,000,000+
+```
+
+### What's in PrimeKG?
+
+**Node Types:**
+- **Drugs** (~10,000): FDA-approved and experimental
+- **Proteins** (~20,000): Human proteins and targets
+- **Diseases** (~17,000): Disease ontology from MONDO
+- **Pathways** (~3,000): Reactome biological pathways
+- **Biological Processes** (~50,000): Gene Ontology terms
+- **Molecular Functions** (~10,000)
+- **Cellular Components** (~4,000)
+- **Anatomical Entities** (~13,000)
+- **Phenotypes** (~13,000)
+
+**Relationship Types:**
+- Drug-Protein interactions (targets, inhibits, activates)
+- Protein-Protein interactions
+- Disease-Protein associations
+- Drug-Disease indications and contraindications
+- Protein-Pathway memberships
+- Disease-Phenotype associations
+- And 30+ more relationship types
+
+### Additional Datasets
+
+#### ChEMBL (Optional)
+
+For bioactivity data:
+
+```bash
+python scripts/download_real_data.py --dataset chembl
+```
+
+**Note**: This downloads a sample (1,000 molecules via API). For the full ChEMBL database:
+1. Visit: https://www.ebi.ac.uk/chembl/
+2. Download: Full database (SQLite or CSV)
+3. Place in: `data/raw/chembl/`
+
+#### DrugBank (Optional, Requires Account)
+
+For detailed drug information:
+
+1. Register at: https://go.drugbank.com/ (free for academics)
+2. Download: "All drugs" CSV file
+3. Place in: `data/raw/drugbank/drugbank.csv`
+4. Load: `python scripts/load_drugbank.py`
 
 ## Database Management
 

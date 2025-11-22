@@ -267,106 +267,112 @@ class MolRAGUI:
         property_query: str,
         cot_strategy: str
     ) -> Tuple[str, str, str]:
-        """Mock prediction when databases not available"""
-        result_text = f"""# Prediction Result (Demo Mode)
+        """Error when databases not available - NO DEMO MODE"""
+        result_text = f"""# ❌ Production System Not Ready
 
 **Query Molecule**: `{smiles}`
 **Property Question**: {property_query}
 
-## ⚠️ Demo Mode Active
-The full RAG prediction system requires:
-- ✅ Databases (Neo4j, Qdrant, Redis)
-- ✅ API keys (OpenAI/Anthropic/OpenRouter)
-- ✅ Molecular data loaded
+## 🚫 Real Data Required
+This system operates with PRODUCTION DATA ONLY.
+No demo mode or sample data available.
 
-**Current Status**: Databases not connected or no data loaded
+**Required Setup:**
+1. ✅ Databases (Neo4j, Qdrant, Redis) running
+2. ✅ API keys configured
+3. ✅ **PrimeKG data loaded (130K+ nodes, 4M+ relationships)**
 
-## 🎯 Mock Prediction
-**Result**: Unknown (full setup required)
-**Confidence**: N/A
-**Strategy**: {cot_strategy}
+**Current Status**: ❌ System not initialized with real data
 
 ---
 
-### 🚀 Quick Setup (5 minutes)
+## 🚀 Production Setup Required
 
-See **[SETUP_GUIDE.md](SETUP_GUIDE.md)** for detailed instructions.
+Run the setup script to download and load real PrimeKG data:
 
-**Quick version:**
 ```bash
-# 1. Add API key to .env
+# 1. Add API key
 echo "OPENAI_API_KEY=sk-your-key" >> .env
 
-# 2. Run quick start
-./scripts/quick_start.sh
+# 2. Setup production system (downloads PrimeKG ~500MB, 20 min)
+./scripts/setup_real_data.sh
 
-# 3. Restart UI
+# 3. Restart this UI
 python app.py
 ```
+
+**What will be installed:**
+- PrimeKG: 130,000+ biomedical entities
+- 4,000,000+ curated relationships
+- Drugs, proteins, diseases, pathways
+- Real drug-target-disease data
+
+**No demo/sample data mode available.**
 """
 
-        reasoning_text = f"""# Reasoning Chain (Demo)
+        reasoning_text = f"""# System Initialization Required
 
-To enable full MolRAG predictions with real molecular reasoning:
+## Production Setup (20 minutes)
 
-## Option 1: Quick Start (Recommended)
+### Quick Method
 ```bash
-# Sets up everything automatically
-./scripts/quick_start.sh
+./scripts/setup_real_data.sh
 ```
 
-## Option 2: Manual Setup
+### Manual Method
 
-### Step 1: Start Databases
+1. **Start Databases**
 ```bash
 docker-compose up -d
 ```
 
-### Step 2: Initialize
+2. **Download PrimeKG** (~500MB, 15 min)
 ```bash
-python scripts/setup_databases.py
+python scripts/download_real_data.py --dataset primekg
 ```
 
-### Step 3: Load Sample Data
+3. **Load into Databases** (5-10 min)
 ```bash
-python scripts/load_sample_data.py
+python scripts/load_knowledge_graphs.py
 ```
 
-### Step 4: Add API Key
-Edit `.env` and add:
-```
-OPENAI_API_KEY=sk-your-key
+4. **Verify**
+```bash
+python -c "
+from src.utils import Config, Neo4jConnector
+config = Config()
+neo4j = Neo4jConnector(config.neo4j_uri, config.neo4j_user, config.neo4j_password)
+result = neo4j.execute_query('MATCH (n) RETURN count(n) as count')
+print(f'Nodes: {result[0][\"count\"]:,}')
+"
 ```
 
-### Step 5: Restart UI
-```bash
-python app.py
-```
+Expected: 130,000+ nodes
 
 ---
 
-**What's Working Now:**
-- ✅ SMILES validation
-- ✅ Molecular properties
-- ✅ Fingerprint generation
-- ✅ Similarity comparison
+## Why No Demo Mode?
 
-**What Needs Setup:**
-- ❌ RAG-based prediction
-- ❌ Knowledge graph reasoning
-- ❌ Vector similarity search
+This is a production system for real drug discovery and biomedical research.
+Operating with toy/sample data would provide misleading results.
 
-See **SETUP_GUIDE.md** for complete instructions.
+**Real data ensures:**
+- Accurate predictions
+- Valid reasoning chains
+- Reliable drug-target interactions
+- Publication-quality results
 """
 
-        status_text = """⚠️ **Demo Mode** - Databases Not Connected
+        status_text = """❌ **Production Data Required**
 
-To enable full predictions, run:
+System requires real PrimeKG data (130K+ nodes, 4M+ relationships).
+
+Setup:
 ```bash
-./scripts/quick_start.sh
+./scripts/setup_real_data.sh
 ```
 
-See [SETUP_GUIDE.md](SETUP_GUIDE.md) for details.
+No sample/demo mode available.
 """
 
         return result_text, reasoning_text, status_text
